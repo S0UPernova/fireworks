@@ -6,7 +6,8 @@ const img = new Image()
 const world = document.getElementById('world')
 const sprite = document.createElement('div')
 const sprites = []
-const gravitySpeed = .2
+const gravitySpeed = 1
+const numberOfPaticles = 40
 prevTimestamp = Date.now()
 let delta = 0
 img.src = './sprite.svg'
@@ -17,14 +18,13 @@ world.style.background = '#eee'
 
 
 /*
-todo
-make this more dry
+TODO: make this more dry
 
-todo
-make it pop out multiple particles, with velocity, and direction coming out of the click
+TODO: make it look more like a firework
 
-todo
-make it look more like a firework
+TODO: Make sprites fade with time
+
+? Maybe make it so that the curser sprite does not leave world example: (if e.pageX > WIDTH ){sprite.style.left = e.pageX - (e.pageX - WIDTH)}
 */
 
 
@@ -58,13 +58,13 @@ function createParticle(x, y) {
 
   particle.style.left = x - (newSpriteWidth / 2) + 'px'
   particle.style.top = y - (newSpriteHeight / 2) + 'px'
-  particle.dataset.velocity = 2
+  particle.dataset.velocity = 500 + (Math.random() * 500)
   particle.dataset.angle = Math.random() * 360 // make random, and change over time
   sprites.push(particle)
   world.appendChild(particle)
 }
 async function handleMouseDown(e) {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < numberOfPaticles; i++) {
     createParticle(e.pageX, e.pageY)
   }
 }
@@ -74,18 +74,18 @@ function applyGravity(el) {
   const left = Number(el.style.left.slice(0, el.style.left.length - 2)) // get just the numbers
   const straightDown = 90
   let an = Number(el.dataset.angle)
-
+  const deltaTime = delta / 4
   if (an < 270 && an > 90) {
-    an - (gravitySpeed * delta) > 90
-      ? el.dataset.angle = an - (gravitySpeed * delta)
+    an - (gravitySpeed * deltaTime) > 90
+      ? el.dataset.angle = an - (gravitySpeed * deltaTime)
       : el.dataset.angle = straightDown
   }
   else if (an > 270 || (an >= 0 && an < 90)) {
-    let newNum = Number(el.dataset.angle) + (gravitySpeed * delta)
+    let newNum = Number(el.dataset.angle) + (gravitySpeed * deltaTime)
     if (newNum > 360) {
       newNum -= 360
     }
-    an + (gravitySpeed * delta)
+    an + (gravitySpeed * deltaTime)
       ? el.dataset.angle = newNum
       : el.dataset.angle = straightDown
   }
@@ -93,8 +93,8 @@ function applyGravity(el) {
     el.dataset.angle = straightDown
   }
   
-  el.style.top = `${top + Number(el.dataset.velocity) * delta * Math.sin(toRadians(Number(el.dataset.angle)))}px`
-  el.style.left = `${left + Number(el.dataset.velocity) * delta * Math.cos(toRadians(Number(el.dataset.angle)))}px`
+  el.style.top = `${top + Number(el.dataset.velocity) * (delta / 1000) * Math.sin(toRadians(Number(el.dataset.angle)))}px`
+  el.style.left = `${left + Number(el.dataset.velocity) * (delta / 1000) * Math.cos(toRadians(Number(el.dataset.angle)))}px`
 }
 
 function toRadians(degrees) {
@@ -118,8 +118,15 @@ document.addEventListener('mousedown', handleMouseDown)
 function animateParticles() {
   sprites.forEach((el, i) => {
     if (removeOutOfBounds(el) === 0) {
-      if (Number(el.dataset.velocity) > gravitySpeed) {
-        el.dataset.velocity = Number(el.dataset.velocity) * (delta / 8)
+      const vel = Number(el.dataset.velocity) 
+      if (vel > gravitySpeed) {
+        el.dataset.velocity = Number(el.dataset.velocity) - (gravitySpeed * (delta / 100))
+      }
+      else if (vel < gravitySpeed) {
+        el.dataset.velocity = Number(el.dataset.velocity) + (gravitySpeed * (delta / 1000))
+      }
+      else {
+        el.dataset.velocity = gravitySpeed
       }
       applyGravity(el)
     }
@@ -138,9 +145,3 @@ function loop() {
   requestAnimationFrame(loop)
 }
 loop()
-/*
-TODO:
-Make sprites fly out on click that droop with gravity, and fade with time, and are removed when off screen
-?
-Maybe make it so that the sprite does not leave world example: (if e.pageX > WIDTH ){sprite.style.left = e.pageX - (e.pageX - WIDTH)}
-*/
