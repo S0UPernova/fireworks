@@ -134,7 +134,7 @@ function loop() {
   // animate particles
   delta = (Date.now() - prevTimestamp)
   prevTimestamp = Date.now()
-  animatePaticals()
+  animateParticles()
   requestAnimationFrame(loop)
 }
 loop()
