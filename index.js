@@ -115,7 +115,7 @@ function removeOutOfBounds(el) {
 document.addEventListener('mousemove', handleMouseMove)
 document.addEventListener('mousedown', handleMouseDown)
 
-function droop() {
+function animateParticles() {
   sprites.forEach((el, i) => {
     if (removeOutOfBounds(el) === 0) {
       if (Number(el.dataset.velocity) > gravitySpeed) {
@@ -134,7 +134,7 @@ function loop() {
   // animate particles
   delta = (Date.now() - prevTimestamp)
   prevTimestamp = Date.now()
-  droop()
+  animatePaticals()
   requestAnimationFrame(loop)
 }
 loop()
