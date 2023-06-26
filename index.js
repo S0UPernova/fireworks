@@ -123,7 +123,7 @@ function animateParticles() {
         el.dataset.velocity = Number(el.dataset.velocity) - (gravitySpeed * (delta / 100))
       }
       else if (vel < gravitySpeed) {
-        el.dataset.velocity = Number(el.dataset.velocity) + (gravitySpeed * (delta / 1000))
+        el.dataset.velocity = Number(el.dataset.velocity) + (gravitySpeed * (delta / 100))
       }
       else {
         el.dataset.velocity = gravitySpeed
